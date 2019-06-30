@@ -148,7 +148,7 @@ NTSTATUS create_shared_memory()
 		return status;
 	}
 
-	//DbgPrintEx(0,0,"ZwCreateSection was successfully created: %p\n", Status);
+	DbgPrintEx(0,0,"ZwCreateSection was successfully created: %p\n", status);
 
 	// my code starts from here xD
 	SIZE_T ulViewSize = 1024 * 10;   // &sectionHandle before was here i guess i am correct 
@@ -159,7 +159,7 @@ NTSTATUS create_shared_memory()
 		return status;
 	}
 
-	//DbgPrintEx(0,0,"ZwMapViewOfSection was successfully created: %p\n", Status);
+	DbgPrintEx(0,0,"ZwMapViewOfSection was successfully created: %p\n", status);
 
 	DbgPrintEx(0, 0, "CreateSharedMemory called finished \n");
 
@@ -198,8 +198,11 @@ VOID ReadSharedMemory()
 
 	DbgPrintEx(0, 0, "Read shared memory called.\n");
 
-	if (sectionHandle)
+	if (!sectionHandle)
+	{
+		DbgPrintEx(0, 0, "sectionHandle invalid data.\n");
 		return;
+	}
 
 	if (SharedSection)
 		ZwUnmapViewOfSection(NtCurrentProcess(), SharedSection);
@@ -214,7 +217,7 @@ VOID ReadSharedMemory()
 		ZwClose(sectionHandle);
 	}
 
-	if (SharedSection = NULL)
+	if ((PCHAR)SharedSection = NULL)
 	{
 		DbgPrintEx(0, 0, "Shared mem NULL.\n");
 		return;
@@ -234,8 +237,9 @@ void NTAPI driver_loop(PVOID StartContext)
 		ReadSharedMemory();
 		
 		DbgPrintEx(0, 0, "Finished reading shared memory.\n");
+		DbgBreakPoint();
 
-		if (SharedSection = NULL)
+		if ((PCHAR)SharedSection = NULL)
 		{
 			DbgPrintEx(0, 0, "Shared mem NULL.\n");
 			continue;
